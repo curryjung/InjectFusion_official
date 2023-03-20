@@ -1,29 +1,32 @@
 
-# Diffusion Models already have a Semantic Latent Space 
+# Training-free Style Transfer Emerges from h-space in Diffusion models
 
-[![arXiv](https://img.shields.io/badge/arXiv-2110.02711-red)](https://arxiv.org/abs/2210.10960) [![project_page](https://img.shields.io/badge/project_page-orange)](https://kwonminki.github.io/Asyrp/)
+[![arXiv](https://img.shields.io/badge/arXiv-2110.02711-red)](https://arxiv.org/abs/2210.10960) [![project_page](https://img.shields.io/badge/project_page-orange)](https://curryjung.github.io/DiffStyle_project_page/)
 
 
-> **Diffusion Models already have a Semantic Latent Space**<br>
+> **Training-free Style Transfer Emerges from h-space in Diffusion models**<br>
 > [Mingi Kwon](https://drive.google.com/file/d/1d1TOCA20KmYnY8RvBvhFwku7QaaWIMZL/view?usp=share_link), [Jaeseok Jeong](https://drive.google.com/file/d/14uHCJLoR1AFydqV_neGjl1H2rjN4HBdv/view), [Youngjung Uh](https://vilab.yonsei.ac.kr/member/professor) <br>
 > Arxiv preprint.
 > 
 >**Abstract**: <br>
-Diffusion models achieve outstanding generative performance in various domains. Despite their great success, they lack semantic latent space which is essential for controlling the generative process. To address the problem, we propose asymmetric reverse process (Asyrp) which discovers the semantic latent space in frozen pretrained diffusion models. Our semantic latent space, named h-space, has nice properties for accommodating semantic image manipulation: homogeneity, linearity, robustness, and consistency across timesteps. In addition, we introduce a principled design of the generative process for versatile editing and quality boosting by quantifiable measures: editing strength of an interval and quality deficiency at a timestep. Our method is applicable to various architectures (DDPM++, iDDPM, and ADM) and datasets (CelebA-HQ, AFHQ-dog, LSUN-church, LSUN-bedroom, and METFACES).
+Diffusion models (DMs) synthesize high-quality images in various domains.
+However, controlling their generative process is still hazy because the intermediate variables in the process are not rigorously studied.
+In this paper, we discover that DMs inherently have disentangled representations for content and style of the resulting images: the bottleneck feature of the U-Net contains the content and the skip connections convey the style. Furthermore, we introduce a principled way to inject content of one image to another considering progressive nature of the generative process. 
+Briefly, given an original generative process, 1) the source content should be gradually blended, 2) the blended content should be normalized to preserve the distribution, 3) manipulation of $x_t$ with style calibrationenables maintaining style during the injection. 
+Then, the resulting image has the source content with the style of the original image just like image-to-image translation. Interestingly, injecting contents to styles of unseen domains produces harmonization-like style transfer.
+To the best of our knowledge, our method introduces the first training-free feed-forward style transfer only with an unconditional pretrained frozen generative network. The code will be available online.
  
 
 ## Description
-This repo includes the official Pytorch implementation of **Asyrp**, Diffusion Models already have a Semantic Latent Space, and **DiffStyle**, Training-free Style Transfer Emerges from h-space in Diffusion models.
+This repo includes the official Pytorch implementation of **DiffStyle**, Training-free Style Transfer Emerges from h-space in Diffusion models.
 
-- Utilizing the *h-space*, bottleneck of U-Net, as a semantic latent space, **Asyrp** allows for the manipulation of real images through diffusion models.
-
-- **DiffStyle** offers training-free content mixing and style transfer capabilities by using *h-space* of diffusion models.
+- **DiffStyle** offers training-free style mixing and harmonization-like style transfer capabilities through content injection on *h-space* of diffusion models.
 
 
 ## Getting Started
 We recommend running our code using NVIDIA GPU + CUDA, CuDNN.
 
-### Pretrained Models for Asyrp & DiffStyle
+### Pretrained Models for DiffStyle
 To manipulate soure images, the pretrained Diffuson models are required.
 
 
@@ -50,198 +53,96 @@ If you want to use **real images**, check the URLs :
 
 You can simply modify `./configs/paths_config.py` for dataset path.
 
-### CUSTOM Datasets
-If you want to use costom dataset, you can use `config/custom.yml` file.
-- You have to match `data.dataset` in `custom.yml` with your data domain. For example, if you want to use Human Face images, `data.dataset` should be `CelebA_HQ` or `FFHQ`. 
-- `data.category` should be `'CUSTOM'`
-- Then, you can simply use arguments:
-```
---custom_train_dataset_dir "your/costom/dataset/dir/train"    \
---custom_test_dataset_dir "your/costom/dataset/dir/test"      \
-```
-
-
-## Asyrp
-To train the implicit function f, you can prepare two optional things. 1) get LPIPS distances 2) precompute
-
-If you want to use your own defined-t_edit (e.g., 500) and defined-t_boost (e.g., 200), you don't need to get LPIPS distances.
-
-For that case, you can simply use arguments :
-```
---user_defined_t_edit 500       \
---user_defined_t_addnoise 200   \
-```
-
-If you want to train with sampled images, you don't need to precompute real images.
-For that case you can simply use argument :
-```
---load_random_noise
-```
-
-### Get LPIPS distance
-To precompute LPIPS distance for automatically defined t_edit & t_boost, run the following commands using `script_get_lpips.sh`.
-```
-python main.py  --lpips                  \
-                --config $config         \
-                --exp ./runs/tmp         \
-                --edit_attr test         \
-                --n_train_img 100        \
-                --n_inv_step 1000   
-```
-- `$config` : `celeba.yml` for human face, `bedroom.yml` for bedroom, `church.yml` for church, `afhq.yml` for dog face, `imagenet.yml` for images from ImageNet, `metface.yml` for artistic face from METFACES, `ffqh.yml` for human face from FFHQ.
-- `exp`: Experiment name.
-- `edit_attr`: Attribute to edit. But not used for now. you can use `./utils/text_dic.py` to predefined source-target text pairs or define new pair. 
-- `n_train_img` : LPIPS distance from # of images.
-- `n_inv_step` : # of steps during the generative pross for the inversion. You can use `--n_inv_step 50` for speed. 
-
-### Precompute real images
-To precompute real images for saving time, run the follwing commands using `script_precompute.sh`.
-```
-python main.py  --run_train          \
-                --config $config     \
-                --exp ./runs/tmp     \
-                --edit_attr test     \
-                --do_train 1         \
-                --do_test 1          \
-                --n_train_img 100    \
-                --n_test_img 32      \
-                --bs_train 1         \
-                --n_inv_step 50      \
-                --n_train_step 50    \
-                --n_test_step 50     \
-                --just_precompute    
-```
-
-### Train the implicit function
-To train the implicit function, run the following commands using `script_train.sh`
-```
-python main.py  --run_train                    \
-                --config $config               \
-                --exp ./runs/example           \
-                --edit_attr $guid              \
-                --do_train 1                   \
-                --do_test 1                    \
-                --n_train_img 100              \
-                --n_test_img 32                \
-                --n_iter 5                     \
-                --bs_train 1                   \
-                --t_0 999                      \
-                --n_inv_step 50                \
-                --n_train_step 50              \
-                --n_test_step 50               \
-                --get_h_num 1                  \
-                --train_delta_block            \
-                --save_x0                      \
-                --use_x0_tensor                \
-                --lr_training 0.5              \
-                --clip_loss_w 1.0              \
-                --l1_loss_w 3.0                \
-                --add_noise_from_xt            \
-                --lpips_addnoise_th 1.2        \
-                --lpips_edit_th 0.33           \
-                --sh_file_name $sh_file_name   \
-
-                (optional - if you pass "get LPIPS")
-                --user_defined_t_edit 500      \
-                --user_defined_t_addnoise 200  \
-
-                (optional - if you pass "precompute")
-                --load_random_noise
-```
-- `do_test`: If you finish training quickly withouth checking the outputs in the middle of training, you can set `do_test` as 0. 
-- `bs_train` : batch size.
-- `n_iter` : iter
-- `get_h_num` : It determine the number of attributes. It should be `1` for training.
-- `train_delta_block` : Train the implicit function. You can use `--train_delta_h` instead of `--train_delta_block` to optimize direction directly. (we recommend -`-train_delta_block`)
-- `--save_x0`, `--use_x0_tensor` : If you want to save the results with original real images, use it.
-- `n_inv_step`, `n_train_step`, `n_test_step`: # of steps during the generative pross for the inversion, training and test respectively. They are in `[0, 999]`. We usually use 40 or 1000 for `n_inv_step`, 40 or 50 for `n_train_step` and 40 or 50 or 1000 for `n_test_step` respectively.
-- `clip_loss_w`, `l1_loss_w` : Weights of CLIP loss and L1 loss.
-
-### Inference
-After training finished, you can inference with various settings using `script_inference.sh`. We provide some of it.
-
-```
-python main.py  --run_test                    \
-                --config $config              \
-                --exp ./runs/example          \
-                --edit_attr $guid             \
-                --do_train 1                  \
-                --do_test 1                   \
-                --n_train_img 100             \
-                --n_test_img 32               \
-                --n_iter 5                    \
-                --bs_train 1                  \
-                --t_0 999                     \
-                --n_inv_step 50               \
-                --n_train_step 50             \
-                --n_test_step $test_step      \
-                --get_h_num 1                 \
-                --train_delta_block           \
-                --add_noise_from_xt           \
-                --lpips_addnoise_th 1.2       \
-                --lpips_edit_th 0.33          \
-                --sh_file_name $sh_file_name  \
-                --save_x0                     \
-                --use_x0_tensor               \
-                --hs_coeff_delta_h 1.0        \
-
-                (optional - checkpoint)
-                --load_from_checkpoint "exp_name"  
-                or
-                --manual_checkpoint_name "full_path.pth"
-
-                (optional - gradually editing)
-                --delta_interpolation
-                --max_delta 1.0
-                --min_delta -1.0
-                --num_delta 10
-
-                (optinal - multi)
-                --multiple_attr "exp1 exp2 exp3"
-                --multiple_hs_coeff "1 0.5 1.5"
-
-                (optional - quality)
-                --dt_lambda $dt_lambda        
-                --warigari                    
-```
-- `exp` : is should be matched with trained exp. If you want to use our pretrained implicit function, you have to set `--exp` as `$guid`.
-- `do_train`, `do_test`: Sampling from training dataset / test dataset.
-- `n_iter` : If `n_iter` is same as trained argument, it use last-iter-checkpoint.
-- `n_test_step` : You can manually regulate inference step. `1000` shows best quality.
-- `hs_coeff_delta_h` : You can manually regulate the degree of editing. It can be the minus number.
-- `--load_from_checkpoint`, `--manual_checkpoint_name` : `load_from_checkpoint` should be the name of exp. `manual_checkpoint_name` should be the full path of checkpoint.
-- `--delta_interpolation`: You can set $max, $min, $num values. The $num of results will use gradually increased dgree of editing from min to max.
-- `--multiple_attr`: If you use multiple attributes, write down the name of exps (use blanks as separators). You can use `--multiple_hs_coeff` to regulate the degree of editing respectively.
-- `dt_lambda` : From DiffStyle. If you use a kind of `0.998`, the quality can be better.
 
 ## DiffStyle
 
-We provide the simple inference script for DiffStyle. (`script_diffstyle.sh`)
+We provide some examples of inference script for DiffStyle. (`script_diffstyle.sh`)
+- Determine `content_dir`, `style_dir`, `save_dir`.
+
 ```
+#AFHQ
+
+config="afhq.yml"
+save_dir="./results/afhq"   # output directory
+content_dir="./test_images/afhq/contents"
+style_dir="./test_images/afhq/styles"
+h_gamma=0.7             # Slerp ratio
+t_boost=200             # 0 for out-of-domain style transfer.
+n_gen_step=1000
+n_inv_step=50
+omega=0.0
+
+python main.py --diff_style                       \
+                        --content_dir $content_dir                          \
+                        --style_dir $style_dir                              \
+                        --save_dir $save_dir                                \
+                        --config $config                                    \
+                        --n_gen_step $n_gen_step                            \
+                        --n_inv_step $n_inv_step                            \
+                        --n_test_step 1000                                  \
+                        --hs_coeff $h_gamma                                 \
+                        --t_noise $t_boost                                  \
+                        --sh_file_name $sh_file_name                        \
+                        --omega $omega                                      \
+
+```
+
+
+```
+#CelebA_HQ style mixing with feature mask
+
 config="celeba.yml"
-save_dir="./save_dir"   # output directory
-content_dir="./test_images/contents"
-style_dir="./test_images/styles"
+save_dir="./results/masked_style_mixing"   # output directory
+content_dir="./test_images/celeba/contents"
+style_dir="./test_images/celeba/styles"
 h_gamma=0.7             # Slerp ratio
 dt_lambda=0.9985        # 1.0 for out-of-domain style transfer.
 t_boost=200             # 0 for out-of-domain style transfer.
 n_gen_step=1000
 n_inv_step=50
+omega=0.0
 
-python main.py  --diff_style                  \
-                --content_dir $content_dir    \
-                --style_dir $style_dir        \
-                --save_dir $save_dir          \
-                --config $config              \
-                --n_gen_step $n_gen_step      \
-                --n_inv_step $n_inv_step      \
-                --n_test_step 1000            \
-                --dt_lambda $dt_lambda        \
-                --hs_coeff $h_gamma           \
-                --t_noise $t_boost            \
-                --sh_file_name $sh_file_name  \
+python main.py --diff_style                       \
+                        --content_dir $content_dir                          \
+                        --style_dir $style_dir                              \
+                        --save_dir $save_dir                                \
+                        --config $config                                    \
+                        --n_gen_step $n_gen_step                            \
+                        --n_inv_step $n_inv_step                            \
+                        --n_test_step 1000                                  \
+                        --dt_lambda $dt_lambda                              \
+                        --hs_coeff $h_gamma                                 \
+                        --t_noise $t_boost                                  \
+                        --sh_file_name $sh_file_name                        \
+                        --omega $omega                                      \
+                        --use_mask                                          \
+
 ```
-- Determine `content_dir`, `style_dir`, `save_dir`.
+
+
+```
+#Harmonization-like style mixing with artistic references
+
+config="celeba.yml"   
+save_dir="./results/style_literature"   # output directory
+content_dir="./test_images/celeba/contents2"
+style_dir="./test_images/style_literature"
+h_gamma=0.4
+n_gen_step=1000
+n_inv_step=1000
+
+CUDA_VISIBLE_DEVICES=$gpu python main.py --diff_style                       \
+                        --content_dir $content_dir                          \
+                        --style_dir $style_dir                              \
+                        --save_dir $save_dir                                \
+                        --config $config                                    \
+                        --n_gen_step $n_gen_step                            \
+                        --n_inv_step $n_inv_step                            \
+                        --n_test_step 1000                                  \
+                        --hs_coeff $h_gamma                                 \
+                        --sh_file_name $sh_file_name                        \
+
+```
 
 ## Acknowledge
-Codes are based on DiffusionCLIP.
+Codes are based on Asryp and DiffusionCLIP.

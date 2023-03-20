@@ -200,6 +200,7 @@ def parse_args_and_config():
     parser.add_argument('--dt_lambda', type=float, default=1.0, help='dt lambda coefficient for sampling calibration')
     parser.add_argument('--dt_end', type=int, default = 950, help='dt end')
     parser.add_argument('--t_noise', type=int, default=0, help='quality boosting')
+    parser.add_argument('--omega', type=float, default=0.0, help='parameter of style calibration')
 
     
     # parser.add_argument('--save_grid', action="store_true", help="save all results in a grid image")

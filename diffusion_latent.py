@@ -939,6 +939,7 @@ class Asyrp(object):
 
         # ----------- Diff style ----------- #
 
+
         results_list = [style_lat_pair[0].cpu() for style_lat_pair in style_lat_pairs]
         results_list.insert(0,torch.zeros_like(results_list[0]))
 
@@ -1002,13 +1003,13 @@ class Asyrp(object):
                                                                             eta=0 if t[0].item()> self.args.t_noise else 1,#self.args.eta,
                                                                             learn_sigma=self.learn_sigma,
                                                                             index=0,
-                                                                            hs_coeff = [self.args.hs_coeff],
+                                                                            hs_coeff = [1 - self.args.hs_coeff],
                                                                             delta_h=delta_hs,
                                                                             use_mask=self.args.use_mask,
                                                                             dt_lambda=self.args.dt_lambda,
                                                                             dt_end = self.args.dt_end,
                                                                             t_edit = self.args.user_defined_t_edit,
-                                                                            warigari = self.args.warigari,
+                                                                            omega = self.args.omega,
                                                                             )
                         else:
                             x, x0_t, _, _ = denoising_step(x, t=t, t_next=t_next, models=model,

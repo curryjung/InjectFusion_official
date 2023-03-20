@@ -37,7 +37,7 @@ def denoising_step(xt, t, t_next, *,
                    ignore_timestep=False,
                    image_space_noise=0,
                    dt_end = 999,
-                   warigari=False,
+                   omega=0.0,
                    ):
 
     # Compute noise and variance
@@ -100,10 +100,9 @@ def denoising_step(xt, t, t_next, *,
         xt_next = at_next.sqrt() * x0_t + (1 - at_next).sqrt() * et * dt_lambda
 
     # Asyrp & DiffStyle
-    if not warigari or index is None:
+    if not omega or index is None:
         return xt_next, x0_t, delta_h, middle_h
 
-    # Warigari by young-hyun, Not in the paper
     else:
         # quite complicated
         new_P_xt = x0_t
@@ -121,7 +120,7 @@ def denoising_step(xt, t, t_next, *,
 
         dx0 = new_P_xt - P_xt
         det = et_modified - et
-        w = warigari
+        w = omega
         dx = at.sqrt()*dx0 + w*(1-at).sqrt()*det
         
         xt += dx
