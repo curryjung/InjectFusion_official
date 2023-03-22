@@ -1,3 +1,5 @@
 test/
 precomputed/
 pretrained/
+script_diffstyle_gif.sh
+bin/

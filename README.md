@@ -1,13 +1,12 @@
 
 # Training-free Style Transfer Emerges from h-space in Diffusion models
 
-[![arXiv](https://img.shields.io/badge/arXiv-2110.02711-red)](https://arxiv.org/abs/2210.10960) [![project_page](https://img.shields.io/badge/project_page-orange)](https://curryjung.github.io/DiffStyle_project_page/)
+[![arXiv](https://img.shields.io/badge/arXiv-2110.02711-red)](https://arxiv.org/abs/2210.10960) [![project_page](https://img.shields.io/badge/project_page-orange)](https://curryjung.github.io/DiffStyle/)
 
 
 > **Training-free Style Transfer Emerges from h-space in Diffusion models**<br>
-> [Mingi Kwon](https://drive.google.com/file/d/1d1TOCA20KmYnY8RvBvhFwku7QaaWIMZL/view?usp=share_link), [Jaeseok Jeong](https://drive.google.com/file/d/14uHCJLoR1AFydqV_neGjl1H2rjN4HBdv/view), [Youngjung Uh](https://vilab.yonsei.ac.kr/member/professor) <br>
+> [Jaeseok Jeong*](https://drive.google.com/file/d/14uHCJLoR1AFydqV_neGjl1H2rjN4HBdv/view), [Mingi Kwon*](https://drive.google.com/file/d/1d1TOCA20KmYnY8RvBvhFwku7QaaWIMZL/view?usp=share_link), [Youngjung Uh](https://vilab.yonsei.ac.kr/member/professor) *denotes equal contribution  <br>
 > Arxiv preprint.
-> 
 >**Abstract**: <br>
 Diffusion models (DMs) synthesize high-quality images in various domains.
 However, controlling their generative process is still hazy because the intermediate variables in the process are not rigorously studied.
@@ -21,6 +20,12 @@ To the best of our knowledge, our method introduces the first training-free feed
 This repo includes the official Pytorch implementation of **DiffStyle**, Training-free Style Transfer Emerges from h-space in Diffusion models.
 
 - **DiffStyle** offers training-free style mixing and harmonization-like style transfer capabilities through content injection on *h-space* of diffusion models.
+
+<!-- teaser image here -->
+![teaser](./src/teaser.png)
+- **DiffStyle** allows (a) style mixing by content injection within the trained domain, (b) local style mixing by injecting
+masked content features, and (c) harmonization-like style transfer with out-of-domain style references. All results are pro-
+duced by frozen pretrained diffusion models. Furthermore, flexibility of DiffStyle enables content injection into any style.
 
 
 ## Getting Started
@@ -43,6 +48,7 @@ To manipulate soure images, the pretrained Diffuson models are required.
 - The pretrained Diffuson models on 256x256 images in [CelebA-HQ](https://arxiv.org/abs/1710.10196), [LSUN-Church](https://www.yf.io/p/lsun), and [LSUN-Bedroom](https://www.yf.io/p/lsun) are automatically downloaded in the code. (codes from [DiffusionCLIP](https://github.com/gwang-kim/DiffusionCLIP))
 - In contrast, you need to download the models pretrained on other datasets in the table and put it in `./pretrained` directory. 
 - You can manually revise the checkpoint paths and names in `./configs/paths_config.py` file.
+
 
 
 ### Datasets 
@@ -143,6 +149,10 @@ CUDA_VISIBLE_DEVICES=$gpu python main.py --diff_style                       \
                         --sh_file_name $sh_file_name                        \
 
 ```
+
+
+
+
 
 ## Acknowledge
 Codes are based on Asryp and DiffusionCLIP.
