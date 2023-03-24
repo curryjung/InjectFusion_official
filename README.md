@@ -155,4 +155,4 @@ CUDA_VISIBLE_DEVICES=$gpu python main.py --diff_style                       \
 
 
 ## Acknowledge
-Codes are based on Asryp and DiffusionCLIP.
+Codes are based on [Asryp](https://github.com/kwonminki/Asyrp_official) and [DiffusionCLIP](https://github.com/gwang-kim/DiffusionCLIP).
