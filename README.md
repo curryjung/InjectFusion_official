@@ -1,5 +1,5 @@
 
-# Training-free Style Transfer Emerges from h-space in Diffusion models
+# Training-free Style Transfer using h-space in Diffusion models
 
 [![arXiv](https://img.shields.io/badge/arXiv-2303.15403-red)](https://arxiv.org/abs/2303.15403) [![project_page](https://img.shields.io/badge/project_page-orange)](https://curryjung.github.io/DiffStyle/)
 
