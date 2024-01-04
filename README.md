@@ -1,43 +1,37 @@
 
 # Training-free Content Injection using h-space in Diffusion models
 
-[![arXiv](https://img.shields.io/badge/arXiv-2303.15403-red)](https://arxiv.org/abs/2303.15403) [![project_page](https://img.shields.io/badge/project_page-orange)](https://curryjung.github.io/DiffStyle/)
+[![arXiv](https://img.shields.io/badge/arXiv-2303.15403-red)](https://arxiv.org/abs/2303.15403) [![project_page](https://img.shields.io/badge/project_page-orange)](https://curryjung.github.io/InjectFusion/)
 
 
 > **Training-free Style Transfer Emerges from h-space in Diffusion models**<br>
 > [Jaeseok Jeong*](https://drive.google.com/file/d/14uHCJLoR1AFydqV_neGjl1H2rjN4HBdv/view), [Mingi Kwon*](https://drive.google.com/file/d/1d1TOCA20KmYnY8RvBvhFwku7QaaWIMZL/view?usp=share_link), [Youngjung Uh](https://vilab.yonsei.ac.kr/member/professor) *denotes equal contribution  <br>
 > Arxiv preprint.
 >**Abstract**: <br>
-    Diffusion models (DMs) synthesize high-quality images in various domains. However, controlling their generative process is still hazy because the intermediate variables in the process are not rigorously studied. 
-    Recently, StyleCLIP-like editing of DMs is found in the bottleneck of the U-Net, named $h$-space. 
-    In this paper, we discover that DMs inherently have disentangled representations for content and style of
-    the resulting images: $h$-space contains the content and the skip connections convey the style. 
-    Furthermore, we introduce a principled way to inject content of one image to another considering progressive nature of the generative process. 
-    Briefly, given the original generative process, 1) the feature of the source content should be gradually blended, 
-    2) the blended feature should be normalized to preserve the distribution, 
-    3) the change of skip connections due to content injection should be calibrated. 
-    Then, the resulting image has the source content with the style of the original image just like image-to-image translation. 
-    Interestingly, injecting contents to styles of unseen domains produces harmonization-like style transfer. 
-    To the best of our knowledge, our method introduces the first training-free feed-forward style transfer only with 
-    an unconditional pretrained frozen generative network.
+
+Diffusion models (DMs) synthesize high-quality images in various domains.
+However, controlling their generative process is still hazy because the intermediate variables in the process are not rigorously studied. 
+Recently, the bottleneck feature of the U-Net, namely $h$-space, is found to convey the semantics of the resulting image. It enables StyleCLIP-like latent editing within DMs.
+In this paper, we explore further usage of $h$-space beyond attribute editing, and introduce a method to inject the content of one image into another image by combining their features in the generative processes. Briefly, given the original generative process of the other image, 1) we gradually blend the bottleneck feature of the content with proper normalization, and 2) we calibrate the skip connections to match the injected content.
+Unlike custom-diffusion approaches, our method does not require time-consuming optimization or fine-tuning. Instead, our method manipulates intermediate features within a feed-forward generative process. Furthermore, our method does not require supervision from external networks. 
  
 
 ## Description
-This repo includes the official Pytorch implementation of **DiffStyle**, Training-free Style Transfer Emerges from h-space in Diffusion models.
+This repo includes the official Pytorch implementation of **InjectFusion**, Training-free Style Transfer Emerges from h-space in Diffusion models.
 
-- **DiffStyle** offers training-free style mixing and harmonization-like style transfer capabilities through content injection on *h-space* of diffusion models.
+- **InjectFusion** offers training-free style mixing and harmonization-like style transfer capabilities through content injection on *h-space* of diffusion models.
 
 <!-- teaser image here -->
 ![teaser](./src/teaser.png)
-- **DiffStyle** allows (a) style mixing by content injection within the trained domain, (b) local style mixing by injecting
+- **InjectFusion** allows (a) style mixing by content injection within the trained domain, (b) local style mixing by injecting
 masked content features, and (c) harmonization-like style transfer with out-of-domain style references. All results are pro-
-duced by frozen pretrained diffusion models. Furthermore, flexibility of DiffStyle enables content injection into any style.
+duced by frozen pretrained diffusion models. Furthermore, flexibility of InjectFusion enables content injection into any style.
 
 
 ## Getting Started
 We recommend running our code using NVIDIA GPU + CUDA, CuDNN.
 
-### Pretrained Models for DiffStyle
+### Pretrained Models for InjectFusion
 To manipulate soure images, the pretrained Diffuson models are required.
 
 
@@ -66,9 +60,9 @@ If you want to use **real images**, check the URLs :
 You can simply modify `./configs/paths_config.py` for dataset path.
 
 
-## DiffStyle
+## InjectFusion
 
-We provide some examples of inference script for DiffStyle. (`script_diffstyle.sh`)
+We provide some examples of inference script for InjectFusion. (`script_InjectFusion.sh`)
 - Determine `content_dir`, `style_dir`, `save_dir`.
 
 ```
