@@ -17,7 +17,7 @@ Unlike custom-diffusion approaches, our method does not require time-consuming o
  
 
 ## Description
-This repo includes the official Pytorch implementation of **InjectFusion**, Training-free Style Transfer Emerges from h-space in Diffusion models.
+This repo includes the official Pytorch implementation of **InjectFusion**, Training-free Content Injection using h-space in Diffusion models.
 
 - **InjectFusion** offers training-free style mixing and harmonization-like style transfer capabilities through content injection on *h-space* of diffusion models.
 
